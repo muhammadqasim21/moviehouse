@@ -63,6 +63,9 @@
   color: #888;
   font-size: 0.9rem;
 }
+.director{
+  color: black;
+}
 .buttonContainer {
   display: flex;
   justify-content: center;
