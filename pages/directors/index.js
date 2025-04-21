@@ -1,6 +1,7 @@
 // pages/directors/index.js
 import useSWR from 'swr';
 import styles from '@/styles/Home.module.css';
+import Link from 'next/link';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -8,7 +9,7 @@ export default function Directors() {
   const { data, error } = useSWR('/data.json', fetcher);
 
   if (error) return <p>Failed to load directors</p>;
-
+  if (!data) return <p>Loading...</p>;
   const { directors, movies } = data;
 
   return (
@@ -25,8 +26,11 @@ export default function Directors() {
               <h3 style={{ color: 'black' }}>Movies:</h3>
               <ul style={{ color: 'black' }}>
                 {directedMovies.map((movie) => (
+                  <Link href={ `/movies/${movie.id}`}>
                   <li key={movie.id}>{movie.title}</li>
+                  </Link>
                 ))}
+
               </ul>
             </div>
           );
