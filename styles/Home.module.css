@@ -70,6 +70,8 @@
   display: flex;
   justify-content: center;
   margin-top: 2rem;
+  gap: 1rem; /* ⬅️ this automatically adds spacing between flex items */
+  flex-wrap: wrap; 
 }
 
 @media (max-width: 768px) {

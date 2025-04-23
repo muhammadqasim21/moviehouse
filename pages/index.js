@@ -10,16 +10,43 @@ export default function Home({ movies }) {
   const handleBrowseGenres = () => {
     router.push('/genres');
   };
-
+  const handleBrowseMovies=()=>{
+    router.push('/movies')
+  }
+  const handleBrowseDirectors=()=>{
+    router.push('/directors')
+  }
+  const handlehelp=()=>{
+    router.push('/help')
+  }
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Trending Movies</h1>
-      
-      
-        <div className={styles.movieGrid}>
-          {movies.map(movie => (
-            <Link href={`/movies/${movie.id}`}>
-            <div key={movie.id} className={styles.movieCard}>
+  
+      {/* Move Buttons to Top */}
+      <div className={styles.buttonContainer}>
+        <button className={styles.genreButton} onClick={handleBrowseGenres}>
+          Browse Genres
+        </button>
+  
+        <button className={styles.genreButton} onClick={handleBrowseMovies}>
+          Browse Movies
+        </button>
+  
+        <button className={styles.genreButton} onClick={handleBrowseDirectors}>
+          Directors
+        </button>
+  
+        <button className={styles.genreButton} onClick={handlehelp}>
+          Help
+        </button>
+      </div>
+  
+      {/* Movie Grid */}
+      <div className={styles.movieGrid}>
+        {movies.map((movie) => (
+          <Link href={`/movies/${movie.id}`} key={movie.id}>
+            <div className={styles.movieCard}>
               <h2>{movie.title}</h2>
               <p className={styles.description}>{movie.description}</p>
               <div className={styles.movieInfo}>
@@ -27,21 +54,12 @@ export default function Home({ movies }) {
                 <span>Rating: {movie.rating}</span>
               </div>
             </div>
-            </Link>
-          ))}
-        </div>
-      
-
-      <div className={styles.buttonContainer}>
-        <button 
-          className={styles.genreButton}
-          onClick={handleBrowseGenres}
-        >
-          Browse Genres
-        </button>
+          </Link>
+        ))}
       </div>
     </div>
   );
+  
 }
 
 export async function getStaticProps() {
