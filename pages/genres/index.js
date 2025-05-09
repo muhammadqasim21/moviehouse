@@ -1,6 +1,5 @@
 // pages/genres.js
-import fs from 'fs/promises';
-import path from 'path';
+import axios from 'axios';
 import Link from 'next/link';
 import styles from '@/styles/Home.module.css';
 
@@ -21,19 +20,24 @@ function GenreList(props) {
 }
 
 export async function getServerSideProps() {
-  const p = path.join(process.cwd(), 'data', 'data.json');
-  const datajson = await fs.readFile(p);
-  const data = JSON.parse(datajson);
-  if (!data.genres) {
+  try{
+    const genresResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/genres`);
+    const genrelist = genresResponse.data.genres
+    if(!genrelist){
+      return {
+        notFound: true
+      };
+    }
     return {
-      notFound: true
+      props: {
+        genres: genrelist
+      }
     };
   }
-  return {
-    props: {
-      genres: data.genres
-    }
-  };
+  catch(error){
+    console.error("Error fetching data", error);
+    return { notFound: true };
+  }
 }
 
 export default GenreList;

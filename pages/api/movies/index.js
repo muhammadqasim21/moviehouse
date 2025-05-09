@@ -20,16 +20,19 @@ export default async function handler(req, res) {
   try {
     const client = await connectToDatabase();
     const db = client.db(dbName);
-    const directors = await db.collection('directors').find({}).toArray();
+    const movies = await db.collection('movies').find({}).toArray();
 
     // Map to exclude MongoDB's _id and return your own fields
-    const directorsFormatted = directors.map(director => ({
-      id: director.id,
-      name: director.name,
-      biography: director.biography
+    const moviesFormatted = movies.map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      description: movie.description,
+      releaseYear: movie.releaseYear,
+      rating: movie.rating,
+      directorId: movie.directorId,
+      genreId: movie.genreId
     }));
-    
-    res.status(200).json({ directors: directorsFormatted});
+    res.status(200).json({ movies: moviesFormatted });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: 'Something went wrong' });

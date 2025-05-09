@@ -1,12 +1,12 @@
 import { useRouter } from 'next/router';
 import styles from "@/styles/Home.module.css";
-import fs from 'fs/promises';
-import path from 'path';
 import Link from 'next/link';
-
+import axios from 'axios';
+import { useContext } from 'react';
+import { ThemeContext } from '@/context/ThemeContext';
 export default function Home({ movies }) {
   const router = useRouter();
-
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const handleBrowseGenres = () => {
     router.push('/genres');
   };
@@ -63,23 +63,30 @@ export default function Home({ movies }) {
 }
 
 export async function getStaticProps() {
-  const p=path.join(process.cwd(),'data','data.json');
-  const datajson =await fs.readFile(p);
-  const data=JSON.parse(datajson);
-  if(!data.movies){
+  try{
+    const moviesResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/movies`);
+    const movies = moviesResponse.data.movies
+    if(!movies){
+      return{
+        notFound: true
+      }
+    }
+    const trendingmovies = movies.filter(e=>e.rating>7.5)
+    console.log(trendingmovies)
     return{
-      notFound: true
+      props:{
+          movies:trendingmovies
+      },
+      //Incremental Static Regeneration
+      revalidate:10
     }
   }
-  const trendingmovies = data.movies.filter(e=>e.rating>7.5)
-  console.log(trendingmovies)
-  return{
-    props:{
-        movies:trendingmovies
-    },
-    //Incremental Static Regeneration
-    revalidate:10
+  catch(e){
+    console.error("Error fetching data", e);
+    return { notFound: true };
   }
+  
+  
 
 
 }
