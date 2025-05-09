@@ -17,11 +17,10 @@ export default function Directors() {
       <h1 className={styles.title}>Directors</h1>
       <div className={styles.movieGrid}>
         {directors.map((d) => {
-          // const directedMovies = movies.filter((movie) => movie.directorId === d.id);
           return (
             <div key={d.id} className={styles.movieCard}>
               <Link href={`/directors/${d.id}`}><h2>{d.name}</h2></Link>
-              <p style={{ color: 'black' }}>{d.biography}</p>
+              <p className={styles.directors}>{d.biography}</p>
               <br></br>
               
             </div>
