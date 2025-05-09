@@ -1,5 +1,4 @@
-import fs from 'fs/promises';
-import path from 'path';
+import axios from 'axios';
 import styles from "@/styles/Home.module.css";
 
 export default function DirectorDetail({ director }) {
@@ -17,45 +16,51 @@ export default function DirectorDetail({ director }) {
 }
 
 export async function getStaticPaths() {
-  const filePath = path.join(process.cwd(), 'data', 'data.json');
-  const jsonData = await fs.readFile(filePath);
-  const data = JSON.parse(jsonData);
+  try {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/movies`);
+    const movies = response.data;
 
-  const paths = data.movies.map(movie => ({
-    params: { id: movie.id },
-  }));
+    const paths = movies.map(movie => ({
+      params: { id: movie.id },
+    }));
 
-  return {
-    paths,
-    fallback: false,
-  };
+    return {
+      paths,
+      fallback: false,
+    };
+  } catch (error) {
+    console.error('Error fetching movie data:', error);
+    return {
+      paths: [],
+      fallback: false,
+    };
+  }
 }
 
 export async function getStaticProps(context) {
   const { id } = context.params;
 
-  const filePath = path.join(process.cwd(), 'data', 'data.json');
-  const jsonData = await fs.readFile(filePath);
-  const data = JSON.parse(jsonData);
+  try {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/movies/${id}`);
+    const movie = response.data.movie;
+    const director = response.data.director
+    // const { movie, director } = response.data;
 
-  const movie = data.movies.find(m => m.id === id);
-  if (!movie) {
+    if (!movie || !director) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        director,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching movie or director data:', error);
     return {
       notFound: true,
     };
   }
-
-  const director = data.directors.find(d => d.id === movie.directorId);
-
-  if (!director) {
-    return {
-      notFound: true,
-    };
-  }
-
-  return {
-    props: {
-      director,
-    },
-  };
 }

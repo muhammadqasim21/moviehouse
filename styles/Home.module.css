@@ -2,11 +2,12 @@
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  background-color: var(--background);
 }
 
 .title {
   font-size: 2.5rem;
-  color: #333;
+  color: var(--title-color);
   margin-bottom: 2rem;
   text-align: center;
 }
@@ -34,7 +35,7 @@
 }
 
 .movieCard {
-  background: white;
+  background: var(--card-bg);
   border-radius: 10px;
   padding: 1.5rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -46,13 +47,13 @@
 }
 
 .movieCard h2 {
-  color: #333;
+  color: var(--title-color);
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }
 
 .description {
-  color: #666;
+  color: var(--description-color);
   margin-bottom: 1rem;
   line-height: 1.5;
 }
@@ -63,33 +64,61 @@
   color: #888;
   font-size: 0.9rem;
 }
-.director{
-  color: black;
+
+.director {
+  color: white;
 }
+
 .buttonContainer {
   display: flex;
   justify-content: center;
   margin-top: 2rem;
-  gap: 1rem; /* ⬅️ this automatically adds spacing between flex items */
-  flex-wrap: wrap; 
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 768px) {
   .movieGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .container {
     padding: 1rem;
   }
 }
-@media (max-width: 768px) {
-  .movieGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .container {
-    padding: 1rem;
-  }
+/* Header.module.css */
+.header {
+  padding: 1rem 2rem;
+  background-color: var(--background);
+  color: var(--foreground);
+  display: flex;
+  justify-content: space-between; /* ⬅️ places title on left, button on right */
+  align-items: center; /* ⬅️ vertically centers both */
+  border-bottom: 1px solid #ccc;
+}
 
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.themeToggle {
+  background: var(--background);
+  border: 2px solid var(--foreground);
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  color: var(--foreground);
+}
+
+.themeToggle:hover {
+  transform: scale(1.05);
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
 }

@@ -1,11 +1,8 @@
-import fs from 'fs/promises';
+import axios from 'axios';
 import styles from "@/styles/Home.module.css";
-import path from 'path';
 import Link from 'next/link';
 
-function MovieDetail(props) {
-  const { movie, director } = props;
-
+function MovieDetail({ movie, director }) {
   if (!movie) {
     return <p>Loading...</p>;
   }
@@ -25,8 +22,8 @@ function MovieDetail(props) {
 
           {director && (
             <div style={{ marginTop: '1rem', color: 'black' }}>
-              <Link href = {`/movies/${movie.id}/director`}>
-              <h3>Director: {director.name}</h3>
+              <Link href={`/movies/${movie.id}/director`}>
+                <h3>Director: {director.name}</h3>
               </Link>
             </div>
           )}
@@ -36,47 +33,57 @@ function MovieDetail(props) {
   );
 }
 
-export async function getStaticProps(context) {
-  const filePath = path.join(process.cwd(), 'data', 'data.json');
-  const dataJson = await fs.readFile(filePath);
-  const data = JSON.parse(dataJson);
+export async function getStaticProps({ params }) {
+  let movie = null;
+  let director = null;
 
-  const movie = data.movies.find(o => o.id === context.params.id);
+  try {
+    // Fetch movie details from the API
+    const movieResponse = await axios.get(`http://localhost:3000/api/movies/${params.id}`);
+    movie = movieResponse.data.movie;
+    director = movieResponse.data.director;
+    
 
-  if (!movie) {
+    if (!movie) {
+      return {
+        redirect: {
+          destination: '/no-data',
+        },
+      };
+    }
+
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
     return {
-      redirect: {
-        destination: '/no-data'
-      }
+      notFound: true,
     };
   }
-
-  const director = data.directors.find(d => d.id === movie.directorId) || null;
 
   return {
     props: {
       movie,
-      director
-    }
+      director,
+    },
   };
 }
 
 export async function getStaticPaths() {
-  const filePath = path.join(process.cwd(), 'data', 'data.json');
-  const dataJson = await fs.readFile(filePath);
-  const data = JSON.parse(dataJson);
+  let paths = [];
 
-  if (!data.movies) {
-    return {
-      notFound: true
-    };
+  try {
+    
+    const moviesResponse = await axios.get('http://localhost:3000/api/movies');
+    const movies = moviesResponse.data.movies;
+
+    paths = movies.map((movie) => ({ params: { id: movie.id } }));
+
+  } catch (error) {
+    console.error('Failed to fetch movies:', error);
   }
-
-  const paths = data.movies.map(o => ({ params: { id: o.id } }));
 
   return {
     paths,
-    fallback: true
+    fallback: false, 
   };
 }
 

@@ -1,6 +1,4 @@
-// pages/genres/[id].js
-import fs from 'fs/promises';
-import path from 'path';
+import axios from 'axios';
 import styles from '@/styles/Home.module.css';
 import Link from 'next/link';
 
@@ -10,7 +8,7 @@ function GenreMovies({ genre, movies }) {
       <h1 className={styles.title}>Genre: {genre.name}</h1>
 
       <div className={styles.movieGrid}>
-        {movies.map(movie => (
+        {movies.map((movie) => (
           <Link href={`/movies/${movie.id}`} key={movie.id} className={styles.movieCard}>
             <h2>{movie.title}</h2>
             <p className={styles.description}>{movie.description}</p>
@@ -27,25 +25,31 @@ function GenreMovies({ genre, movies }) {
 
 export async function getServerSideProps(context) {
   const genreId = context.params.id;
-  const p = path.join(process.cwd(), 'data', 'data.json');
-  const datajson = await fs.readFile(p);
-  const data = JSON.parse(datajson);
 
-  const genre = data.genres.find(g => g.id === genreId);
-  if (!genre) {
+  try {
+    // Call your API endpoint to get movies by genre
+    const response = await axios.get(`http://localhost:3000/api/genres/${genreId}/movies`);
+    const { genre, movies } = response.data;
+
+    if (!genre) {
+      return {
+        notFound: true,
+      };
+    }
+
     return {
-      notFound: true
+      props: {
+        genre,
+        movies,
+      },
+    };
+  } catch (error) {
+    console.error('Failed to fetch genre movies:', error);
+
+    return {
+      notFound: true,
     };
   }
-
-  const movies = data.movies.filter(m => m.genreId === genreId);
-
-  return {
-    props: {
-      genre,
-      movies
-    }
-  };
 }
 
 export default GenreMovies;
